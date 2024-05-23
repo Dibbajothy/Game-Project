@@ -10,7 +10,7 @@ int main()
 {
     Color darkblue = {44, 44, 127, 255};
     InitWindow(300, 600, "Tetris");
-
+    //name
     SetTargetFPS(60);
 
     Grid grid = Grid();
