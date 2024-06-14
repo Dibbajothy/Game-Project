@@ -4,8 +4,11 @@
 using namespace std;
 
 class Grid{
+
     private:
-        vector<Color> GetCellColors();
+        bool IsRowFull(int row);
+        void CLearRow(int row);
+        void MoveRowDown(int row, int numRows);
         int numRows, numCols;
         int cellSize;
         vector<Color> colors;
@@ -15,6 +18,9 @@ class Grid{
         void Initialize();
         void Print();
         void Draw();
+        bool IsCellOutside(int row, int column);
+        bool IsCellEmpty(int row, int column);
+        int ClearFullRows();
         int grid[20][10];
 
 };
