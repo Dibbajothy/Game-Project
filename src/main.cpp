@@ -34,6 +34,7 @@ int main()
             game.MoveBlockDown();
         }
         BeginDrawing();
+
         ClearBackground(darkBlue);
         DrawTextEx(font, "Score", {365, 15}, 38, 2, WHITE);
         DrawTextEx(font, "Next", {370, 175}, 38, 2, WHITE);
