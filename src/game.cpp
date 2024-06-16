@@ -9,7 +9,7 @@ Game::Game(){
     GameOver = false;
     score = 0;
     InitAudioDevice();
-    music = LoadMusicStream("Sounds/music.mp3");
+    music = LoadMusicStream("Sound/music.mp3");
     PlayMusicStream(music);
     rotateSound = LoadSound("Sounds/rotate.mp3");
     clearSound = LoadSound("Sounds/clear.mp3");
@@ -119,6 +119,12 @@ void Game::MoveBlockDown()
     }
 }
 
+void Game::LoadingBar()
+{
+    
+
+}
+
 bool Game::IsBlockOutside()
 {
     vector<Position> tiles = currentBlock.GetCellPositions();
@@ -207,3 +213,4 @@ void Game::UpdateScore(int linesCleared, int moveDownPoints)
     }
     score += moveDownPoints;
 }
+
