@@ -9,7 +9,6 @@ class Game{
         void Draw();
         void HandleInput();
         void MoveBlockDown();
-        void LoadingBar();
         bool GameOver;
         int score;
         Music music;

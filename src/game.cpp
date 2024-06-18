@@ -67,6 +67,7 @@ void Game::Draw(){
 void Game::HandleInput()
 {
     int keyPressed = GetKeyPressed();
+
     if(GameOver && keyPressed != 0 ){
         GameOver = false;
         Reset();
@@ -119,12 +120,6 @@ void Game::MoveBlockDown()
     }
 }
 
-void Game::LoadingBar()
-{
-    
-
-}
-
 bool Game::IsBlockOutside()
 {
     vector<Position> tiles = currentBlock.GetCellPositions();
@@ -153,6 +148,7 @@ void Game::RotateBlock()
 void Game::LockBlock()
 {
     vector<Position> tiles = currentBlock.GetCellPositions();
+
     for (Position item : tiles)
     {
         grid.grid[item.row][item.column] = currentBlock.id;
@@ -161,6 +157,20 @@ void Game::LockBlock()
     currentBlock = nextBlock;
 
     if(BlockFits() == false){
+
+        long long int lastScore, bestScore;
+
+        FILE *record = fopen("Score/records.txt", "r");
+        fscanf(record, "%lld%lld", &lastScore, &bestScore);
+        fclose(record);
+
+        lastScore = score;
+        bestScore = (score > bestScore) ? score : bestScore;
+
+        FILE *record1 = fopen("Score/records.txt", "w");
+        fprintf(record1, "%lld %lld", lastScore, bestScore);
+        fclose(record1);
+        
         GameOver = true;
     }
 
