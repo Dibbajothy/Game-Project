@@ -68,10 +68,10 @@ void Game::HandleInput()
 {
     int keyPressed = GetKeyPressed();
 
-    if(GameOver && keyPressed != 0 ){
-        GameOver = false;
-        Reset();
-    }
+    // if(GameOver && keyPressed != 0 ){
+    //     GameOver = false;
+    //     Reset();
+    // }
     
     switch(keyPressed){
         case KEY_LEFT:

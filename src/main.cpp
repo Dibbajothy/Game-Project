@@ -1,5 +1,4 @@
 #include<iostream>
-
 #include <raylib.h>
 #include "game.h"
 #include "colors.h"
@@ -30,6 +29,7 @@ bool leaderboard_page = false;
 bool about_page = false;
 bool loading_page = false;
 bool main_game = false;
+bool game_over = false;
 
 int main()
 {
@@ -227,12 +227,59 @@ int main()
 
 
 
+
+
+        if(game_over){
+
+            DrawRectangleRoundedLines({3, 3, 494, 614}, 0, 0, 5, WHITE);
+            DrawTextEx(tittle, "WELL DONE", {120, 100}, 54, 2, WHITE);
+
+
+
+
+
+            Button playAgain_button;
+            init_button(&playAgain_button, {149, 445, 211, 43}, lightWhite);        
+            button_color_change(&playAgain_button, lightWhite, lightestGreen);
+            DrawRectangleRounded(playAgain_button.rect, 0.2, 20, playAgain_button.color);
+            DrawTextEx(font_treb, "PLAY AGAIN", {158, 450}, 35, 3, WHITE);
+
+            if(game.GameOver && button_in_action(playAgain_button) ){
+                game.GameOver = false;
+                game.Reset();
+                game_over = false;
+                main_game = true;
+            }
+
+            Button mainMenue_button;
+            init_button(&mainMenue_button, {153, 510, 202, 43}, lightWhite);        
+            button_color_change(&mainMenue_button, lightWhite, RED);
+            DrawRectangleRounded(mainMenue_button.rect, 0.2, 20, mainMenue_button.color);
+            DrawTextEx(font_treb, "MAIN MENUE", {165, 517}, 30, 3, WHITE);
+
+            if(button_in_action(mainMenue_button)){
+                front_page = true;
+                game_over = false;
+                game.GameOver = false;
+                game.Reset();
+                start = 105;
+            }
+
+
+        }
+
+
+
+
+
+
+
         if(main_game){
             // Main Game Part
-
+            DrawRectangleRoundedLines({3, 3, 494, 614}, 0, 0, 5, WHITE);
             game.HandleInput();
 
-            if(EventTriggered(0.5)){
+            if(EventTriggered(0.01)){
                 game.MoveBlockDown();
             }
 
@@ -240,10 +287,13 @@ int main()
             DrawTextEx(font, "Next", {370, 175}, 38, 2, WHITE);
 
             if(game.GameOver){
-                DrawTextEx(font, "GAME OVER", {320, 450}, 45, 2, WHITE);
+                game_over = true;
+                main_game = false;
+                WaitTime(1.3);
+                // DrawTextEx(font, "GAME OVER", {320, 450}, 45, 2, WHITE);
             }
 
-            DrawRectangleRounded({320, 55, 170, 60}, 0.3, 6, lightBlue);
+            DrawRectangleRounded({320, 55, 170, 60}, 0.3, 6, lightWhite);
 
             char scoreText[10];
             sprintf(scoreText, "%d", game.score);
@@ -251,7 +301,7 @@ int main()
 
             DrawTextEx(font, scoreText, {320 + (170-textSize.x)/2, 65}, 38, 2, WHITE);
 
-            DrawRectangleRounded({320, 215, 170, 180}, 0.3, 6, lightBlue);
+            DrawRectangleRounded({320, 215, 170, 180}, 0.3, 6, lightWhite);
             game.Draw();
         }
 

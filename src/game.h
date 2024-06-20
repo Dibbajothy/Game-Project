@@ -7,6 +7,7 @@ class Game{
         Game();
         ~Game();
         void Draw();
+        void Reset();
         void HandleInput();
         void MoveBlockDown();
         bool GameOver;
@@ -22,7 +23,6 @@ class Game{
         void MoveBlockRight();
         void LockBlock();
         bool BlockFits();
-        void Reset();
         void UpdateScore(int linesCleared, int moveDownPoints);
         Grid grid;
         vector<Block> blocks;
