@@ -12,6 +12,7 @@ class Game{
         void MoveBlockDown();
         bool GameOver;
         int score;
+        int totalRowCleared;
         Music music;
 
     private:

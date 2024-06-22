@@ -17,7 +17,8 @@ bool EventTriggered(double interval){
     return false;
 }
 
-float start = 105;
+float start = 105; // Loading bar initial state 
+int state = 1; // flip button initial state
 
 
 Image icon = LoadImage("Image/tetris-logo.png"); // Game Logo On Tittle Bar
@@ -78,10 +79,15 @@ int main()
             button_color_change(&lead_button, lightWhite, BLUE);
             button_color_change(&about_button, lightWhite, BLUE);
 
-            DrawRectangleRounded(start_button.rect, 0.2, 20, start_button.color);
-            DrawRectangleRounded(help_button.rect, 0.2, 20, help_button.color);
-            DrawRectangleRounded(lead_button.rect, 0.2, 20, lead_button.color);
-            DrawRectangleRounded(about_button.rect, 0.2, 20, about_button.color);
+            DrawRectangleRounded(start_button.rect, 0, 20, start_button.color);
+            DrawRectangleRounded(help_button.rect, 0, 20, help_button.color);
+            DrawRectangleRounded(lead_button.rect, 0, 20, lead_button.color);
+            DrawRectangleRounded(about_button.rect, 0, 20, about_button.color);
+
+            DrawRectangleRoundedLines(start_button.rect, 0, 20, 1.2, BLACK);
+            DrawRectangleRoundedLines(help_button.rect, 0, 20, 1.2, BLACK);
+            DrawRectangleRoundedLines(lead_button.rect, 0, 20, 1.2, BLACK);
+            DrawRectangleRoundedLines(about_button.rect, 0, 20, 1.2, BLACK);
 
             DrawTextEx(font_treb, "START", {192, 277}, 34, 7, WHITE);
             DrawTextEx(font_treb, "HELP", {205, 336}, 34, 7, WHITE);
@@ -131,12 +137,12 @@ int main()
 
 
             DrawTextEx(font_treb, "Last Score", {164, 250}, 33, 4, WHITE);
-            DrawRectangleRounded({135, 290, 229, 70}, 0.2, 20, lightWhite);
+            DrawRectangleRounded({135, 290, 229, 70}, 0, 20, lightWhite);
             DrawTextEx(font_treb, lastScore, {135 + (229 - lastScoreSize.x)/2, 307}, 38, 3, WHITE);
 
 
             DrawTextEx(font_treb, "Best Score", {164, 369}, 33, 4, WHITE);
-            DrawRectangleRounded({135, 410, 229, 70}, 0.2, 20, lightWhite);
+            DrawRectangleRounded({135, 410, 229, 70}, 0, 20, lightWhite);
             DrawTextEx(font_treb, bestScore, {135 + (229 - bestScoreSize.x)/2, 425}, 38, 3, WHITE);
 
 
@@ -145,7 +151,8 @@ int main()
             Button reset_button;
             init_button(&reset_button, {384, 560, 89, 34}, lightWhite);        
             button_color_change(&reset_button, lightWhite, RED);
-            DrawRectangleRounded(reset_button.rect, 0.2, 20, reset_button.color);
+            DrawRectangleRounded(reset_button.rect, 0, 20, reset_button.color);
+            DrawRectangleRoundedLines(reset_button.rect, 0, 20, 1.2, BLACK);
             DrawTextEx(font_treb, "RESET", {391, 565}, 25, 3, WHITE);
 
             if(button_in_action(reset_button)){
@@ -161,7 +168,8 @@ int main()
             Button back_button;
             init_button(&back_button, {15, 16, 77, 33}, lightWhite);        
             button_color_change(&back_button, lightWhite, BLUE);
-            DrawRectangleRounded(back_button.rect, 0.2, 20, back_button.color);
+            DrawRectangleRounded(back_button.rect, 0, 20, back_button.color);
+            DrawRectangleRoundedLines(back_button.rect, 0, 20, 1.2, BLACK);
             DrawTextEx(font_treb, "BACK", {22, 20}, 25, 3, WHITE);
 
             if(button_in_action(back_button)){
@@ -185,12 +193,35 @@ int main()
             Button back_button;
             init_button(&back_button, {15, 16, 77, 33}, lightWhite);        
             button_color_change(&back_button, lightWhite, BLUE);
-            DrawRectangleRounded(back_button.rect, 0.2, 20, back_button.color);
+            DrawRectangleRounded(back_button.rect, 0, 20, back_button.color);
+            DrawRectangleRoundedLines(back_button.rect, 0, 20, 1.2, BLACK);
             DrawTextEx(font_treb, "BACK", {22, 20}, 25, 3, WHITE);
 
             if(button_in_action(back_button)){
                 front_page = true;
                 about_page = false;
+            }
+
+            Button flip_button;
+            init_button(&flip_button, {433, 20, 47, 21}, WHITE);
+            button_color_change(&flip_button, WHITE, GRAY);
+            DrawRectangleRoundedLines(flip_button.rect, 0, 20, 2,flip_button.color);
+
+            if(state == -1){
+                DrawRectangle(3, 250, 492, 340, darkBlue);
+            }
+
+            {
+                if(state == 1){
+                    DrawRectangle(436, 23, 20, 15, WHITE);
+                }
+                else{
+                    DrawRectangle(457, 23, 20, 15, GREEN);
+                }
+            }
+
+            if(button_in_action(flip_button)){
+                state *= -1;
             }
 
         }
@@ -214,7 +245,7 @@ int main()
             DrawRectangleRoundedLines({100, 445, 315, 26}, 0, 0, 1.7, WHITE);
             DrawRectangleRec({105, 450, start + 5, 16}, lightGreen);
 
-            if(EventTriggered(0.07) && start < 300){
+            if(EventTriggered(0.01) && start < 300){ // 0.06
                 start += 5;
                 if(start == 300.0){
                     loading_page = false;
@@ -232,16 +263,32 @@ int main()
         if(game_over){
 
             DrawRectangleRoundedLines({3, 3, 494, 614}, 0, 0, 5, WHITE);
-            DrawTextEx(tittle, "WELL DONE", {120, 100}, 54, 2, WHITE);
+            DrawTextEx(tittle, "WELL DONE", {122, 100}, 54, 2, WHITE);
 
 
+
+            char scored[20];
+            sprintf(scored, "%d", game.score);
+            Vector2 scoreTextSize = MeasureTextEx(font, scored, 45, 2);
+            DrawTextEx(font, "SCORE :", {70 , 228}, 60, 2, WHITE);
+            DrawRectangle(230, 235, 210, 49, lightWhite);
+            DrawTextEx(font, scored, {230 + (210-scoreTextSize.x)/2, 236}, 45, 2, WHITE);
+
+
+            char RowsCleared[20];
+            sprintf(RowsCleared, "%d", game.totalRowCleared);
+            Vector2 textSize = MeasureTextEx(font, RowsCleared, 45, 2);
+            DrawTextEx(font, "LINE CLEARS :", {70 , 301}, 40, 2, WHITE);
+            DrawRectangle(270, 300, 170, 49, lightWhite);
+            DrawTextEx(font, RowsCleared, {270 + (170-textSize.x)/2, 300}, 45, 2, WHITE);
 
 
 
             Button playAgain_button;
             init_button(&playAgain_button, {149, 445, 211, 43}, lightWhite);        
             button_color_change(&playAgain_button, lightWhite, lightestGreen);
-            DrawRectangleRounded(playAgain_button.rect, 0.2, 20, playAgain_button.color);
+            DrawRectangleRounded(playAgain_button.rect, 0, 20, playAgain_button.color);
+            DrawRectangleRoundedLines(playAgain_button.rect, 0, 20, 1.2, BLACK);
             DrawTextEx(font_treb, "PLAY AGAIN", {158, 450}, 35, 3, WHITE);
 
             if(game.GameOver && button_in_action(playAgain_button) ){
@@ -254,7 +301,8 @@ int main()
             Button mainMenue_button;
             init_button(&mainMenue_button, {153, 510, 202, 43}, lightWhite);        
             button_color_change(&mainMenue_button, lightWhite, RED);
-            DrawRectangleRounded(mainMenue_button.rect, 0.2, 20, mainMenue_button.color);
+            DrawRectangleRounded(mainMenue_button.rect, 0, 20, mainMenue_button.color);
+            DrawRectangleRoundedLines(mainMenue_button.rect, 0, 20, 1.2, BLACK);
             DrawTextEx(font_treb, "MAIN MENUE", {165, 517}, 30, 3, WHITE);
 
             if(button_in_action(mainMenue_button)){
@@ -278,8 +326,9 @@ int main()
             // Main Game Part
             DrawRectangleRoundedLines({3, 3, 494, 614}, 0, 0, 5, WHITE);
             game.HandleInput();
+            game.Draw();
 
-            if(EventTriggered(0.01)){
+            if(EventTriggered(0.3)){
                 game.MoveBlockDown();
             }
 
@@ -287,9 +336,9 @@ int main()
             DrawTextEx(font, "Next", {370, 175}, 38, 2, WHITE);
 
             if(game.GameOver){
-                game_over = true;
                 main_game = false;
-                WaitTime(1.3);
+                game_over = true;
+                WaitTime(1.7);
                 // DrawTextEx(font, "GAME OVER", {320, 450}, 45, 2, WHITE);
             }
 
@@ -302,7 +351,7 @@ int main()
             DrawTextEx(font, scoreText, {320 + (170-textSize.x)/2, 65}, 38, 2, WHITE);
 
             DrawRectangleRounded({320, 215, 170, 180}, 0.3, 6, lightWhite);
-            game.Draw();
+
         }
 
         EndDrawing();

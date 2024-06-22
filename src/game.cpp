@@ -8,6 +8,7 @@ Game::Game(){
     nextBlock = GetRandomBlock();
     GameOver = false;
     score = 0;
+    totalRowCleared = 0;
     InitAudioDevice();
     music = LoadMusicStream("Sound/music.mp3");
     PlayMusicStream(music);
@@ -178,6 +179,7 @@ void Game::LockBlock()
     int rowsCleared = grid.ClearFullRows();
     
     if(rowsCleared > 0){
+        totalRowCleared += rowsCleared;
         PlaySound(clearSound);
         UpdateScore(rowsCleared, 0);
     }
