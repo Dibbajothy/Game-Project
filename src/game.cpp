@@ -1,7 +1,8 @@
-#include "game.h"
+#include "game.h" 
 #include<random>
 
 Game::Game(){
+
     grid = Grid();
     blocks = GetAllBlocks();
     currentBlock = GetRandomBlock();
@@ -9,6 +10,9 @@ Game::Game(){
     GameOver = false;
     score = 0;
     totalRowCleared = 0;
+    BlockLastUpdateTime = 0;
+    SpeedLastUpdateTime = 0;
+    LastUpdateTime = 0;
     InitAudioDevice();
     music = LoadMusicStream("Sound/music.mp3");
     PlayMusicStream(music);
@@ -69,10 +73,6 @@ void Game::HandleInput()
 {
     int keyPressed = GetKeyPressed();
 
-    // if(GameOver && keyPressed != 0 ){
-    //     GameOver = false;
-    //     Reset();
-    // }
     
     switch(keyPressed){
         case KEY_LEFT:
@@ -120,6 +120,8 @@ void Game::MoveBlockDown()
 
     }
 }
+
+
 
 bool Game::IsBlockOutside()
 {
@@ -226,3 +228,38 @@ void Game::UpdateScore(int linesCleared, int moveDownPoints)
     score += moveDownPoints;
 }
 
+
+bool Game::EventTriggered(double interval)
+{
+
+    double CurrentTime = GetTime();
+    if(CurrentTime - LastUpdateTime >= interval){
+        LastUpdateTime = CurrentTime;
+        return true;
+    }
+
+    return false;
+}
+
+
+bool Game::blockUpdateTime(double interval)
+{
+
+    double CurrentTime = GetTime();
+    if(CurrentTime - BlockLastUpdateTime >= interval){
+        BlockLastUpdateTime = CurrentTime;
+        return true;
+    }
+    return false;
+
+}
+
+bool Game::SpeedUpdateTime(double interval)
+{
+    double CurrentTime = GetTime();
+    if(CurrentTime - SpeedLastUpdateTime >= interval){
+        SpeedLastUpdateTime = CurrentTime;
+        return true;
+    }
+    return false;
+}

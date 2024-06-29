@@ -6,23 +6,14 @@
 
 using namespace std;
 
-double LastUpdateTime = 0;
-bool EventTriggered(double interval){
 
-    double CurrentTime = GetTime();
-    if(CurrentTime - LastUpdateTime >= interval){
-        LastUpdateTime = CurrentTime;
-        return true;
-    }
-    return false;
-}
-
-float start = 105; // Loading bar initial state 
+float start = 105; // Loading bar initial state
+float speed_interval = 20;
+float speed = 0.3;
 int state = 1; // flip button initial state
 
 
 Image icon = LoadImage("Image/tetris-logo.png"); // Game Logo On Tittle Bar
-
 
 
 bool front_page = true;
@@ -40,6 +31,7 @@ int main()
 
     Texture2D blocksImage = LoadTexture("Image/blocks.png");
     Texture2D aboutImage = LoadTexture("Image/aboutpage2.png");
+    Texture2D aboutinsideImage = LoadTexture("Image/aboutinside.png");
 
 
     SetTargetFPS(60);
@@ -208,7 +200,8 @@ int main()
             DrawRectangleRoundedLines(flip_button.rect, 0, 20, 2,flip_button.color);
 
             if(state == -1){
-                DrawRectangle(3, 250, 492, 340, darkBlue);
+                // DrawRectangle(3, 250, 492, 340, darkBlue);
+                DrawTextureEx(aboutinsideImage, {3, 250}, 0, 0.236, WHITE);
             }
 
             {
@@ -231,10 +224,11 @@ int main()
 
         if(loading_page){
             
-            DrawRectangleRoundedLines({3, 3, 494, 614}, 0, 0, 5, WHITE); // WHole Rectangle
+            DrawRectangleRoundedLines({3, 3, 494, 614}, 0, 0, 5, WHITE); // WHole Rectangle border
 
             DrawRectangleRoundedLines({131, 109, 242, 63}, 0, 0, 2.1, WHITE);
             DrawTextEx(tittle, "TETRIS", {140, 100}, 80, 2, WHITE);
+
             //Blocks
             DrawTextureEx(blocksImage, {153, 230}, 0, 0.07, WHITE);
             //end
@@ -243,9 +237,9 @@ int main()
             // start = 105
             DrawText("LOADING", 210, 415, 20, WHITE);
             DrawRectangleRoundedLines({100, 445, 315, 26}, 0, 0, 1.7, WHITE);
-            DrawRectangleRec({105, 450, start + 5, 16}, lightGreen);
+            DrawRectangleRec({105, 450, start, 16}, lightGreen);
 
-            if(EventTriggered(0.01) && start < 300){ // 0.06
+            if(game.EventTriggered(0.04) && start < 300){
                 start += 5;
                 if(start == 300.0){
                     loading_page = false;
@@ -296,6 +290,7 @@ int main()
                 game.Reset();
                 game_over = false;
                 main_game = true;
+                speed = 0.3;
             }
 
             Button mainMenue_button;
@@ -303,7 +298,7 @@ int main()
             button_color_change(&mainMenue_button, lightWhite, RED);
             DrawRectangleRounded(mainMenue_button.rect, 0, 20, mainMenue_button.color);
             DrawRectangleRoundedLines(mainMenue_button.rect, 0, 20, 1.2, BLACK);
-            DrawTextEx(font_treb, "MAIN MENUE", {165, 517}, 30, 3, WHITE);
+            DrawTextEx(font_treb, "MAIN MENU", {175, 517}, 30, 3, WHITE);
 
             if(button_in_action(mainMenue_button)){
                 front_page = true;
@@ -311,37 +306,31 @@ int main()
                 game.GameOver = false;
                 game.Reset();
                 start = 105;
+                speed = 0.3;
             }
-
-
         }
-
-
-
-
 
 
 
         if(main_game){
             // Main Game Part
             DrawRectangleRoundedLines({3, 3, 494, 614}, 0, 0, 5, WHITE);
+
             game.HandleInput();
             game.Draw();
 
-            if(EventTriggered(0.3)){
+            if(game.blockUpdateTime(abs(speed))){
                 game.MoveBlockDown();
+                cout << speed << endl;
             }
 
+            if(game.SpeedUpdateTime(speed_interval) && (speed - 0.03) > 0){
+                speed -= 0.03;
+            } // to increase the speed
+
+
+            //////// Score Board 
             DrawTextEx(font, "Score", {365, 15}, 38, 2, WHITE);
-            DrawTextEx(font, "Next", {370, 175}, 38, 2, WHITE);
-
-            if(game.GameOver){
-                main_game = false;
-                game_over = true;
-                WaitTime(1.7);
-                // DrawTextEx(font, "GAME OVER", {320, 450}, 45, 2, WHITE);
-            }
-
             DrawRectangleRounded({320, 55, 170, 60}, 0.3, 6, lightWhite);
 
             char scoreText[10];
@@ -349,13 +338,41 @@ int main()
             Vector2 textSize = MeasureTextEx(font, scoreText, 38, 2);
 
             DrawTextEx(font, scoreText, {320 + (170-textSize.x)/2, 65}, 38, 2, WHITE);
+            ////////
 
+
+
+            ///////// Next Block
+            DrawTextEx(font, "Next", {370, 175}, 38, 2, WHITE);
             DrawRectangleRounded({320, 215, 170, 180}, 0.3, 6, lightWhite);
+            /////////
+
+
+
+            ///////// Amount of lines clear
+            DrawTextEx(font, "Lines Clear", {337, 450}, 38, 2, WHITE);
+            DrawRectangleRounded({320, 488, 170, 60}, 0.3, 6, lightWhite);
+
+            char linesClearText[10];
+            sprintf(linesClearText, "%d", game.totalRowCleared);
+            Vector2 lineclear = MeasureTextEx(font, linesClearText, 38, 2);
+
+            DrawTextEx(font, linesClearText, {320 + (170-lineclear.x)/2, 497}, 38, 2, WHITE);
+            /////////
+
+
+            // to initialize game_over page after game over 
+            if(game.GameOver){
+                main_game = false;
+                game_over = true;
+                WaitTime(1.3);
+            }
 
         }
 
         EndDrawing();
     }
+    
     
     CloseWindow();
 }

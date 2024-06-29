@@ -10,6 +10,9 @@ class Game{
         void Reset();
         void HandleInput();
         void MoveBlockDown();
+        bool EventTriggered(double interval);
+        bool blockUpdateTime(double interval);
+        bool SpeedUpdateTime(double interval);
         bool GameOver;
         int score;
         int totalRowCleared;
@@ -18,6 +21,9 @@ class Game{
     private:
         Block GetRandomBlock();
         vector<Block> GetAllBlocks();
+        double BlockLastUpdateTime;
+        double SpeedLastUpdateTime;
+        double LastUpdateTime;
         bool IsBlockOutside();
         void RotateBlock();
         void MoveBlockLeft();
