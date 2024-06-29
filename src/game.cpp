@@ -13,9 +13,16 @@ Game::Game(){
     BlockLastUpdateTime = 0;
     SpeedLastUpdateTime = 0;
     LastUpdateTime = 0;
+    highestScore = 0;
     InitAudioDevice();
-    music = LoadMusicStream("Sound/music.mp3");
+    music = LoadMusicStream("Sounds/music.mp3");
+    bgm = LoadMusicStream("Sounds/maingame.mp3");
+    gameOverBgm = LoadMusicStream("Sounds/gameover.mp3");
+    highScoreBgm = LoadMusicStream("Sounds/highscore.mp3");
     PlayMusicStream(music);
+    PlayMusicStream(bgm);
+    PlayMusicStream(gameOverBgm);
+    PlayMusicStream(highScoreBgm);
     rotateSound = LoadSound("Sounds/rotate.mp3");
     clearSound = LoadSound("Sounds/clear.mp3");
 
@@ -26,6 +33,9 @@ Game::~Game(){
     UnloadSound(rotateSound);
     UnloadSound(clearSound);
     UnloadMusicStream(music);
+    UnloadMusicStream(bgm);
+    UnloadMusicStream(gameOverBgm);
+    UnloadMusicStream(highScoreBgm);
     CloseAudioDevice();
 
 }
@@ -48,6 +58,7 @@ vector<Block> Game::GetAllBlocks()
 {
     return {IBlock(), JBlock(), LBlock(), OBlock(), SBlock(), TBlock(), ZBlock()};
 }
+
 
 void Game::Draw(){
 
@@ -73,7 +84,6 @@ void Game::HandleInput()
 {
     int keyPressed = GetKeyPressed();
 
-    
     switch(keyPressed){
         case KEY_LEFT:
             MoveBlockLeft();
@@ -122,7 +132,6 @@ void Game::MoveBlockDown()
 }
 
 
-
 bool Game::IsBlockOutside()
 {
     vector<Position> tiles = currentBlock.GetCellPositions();
@@ -165,6 +174,7 @@ void Game::LockBlock()
 
         FILE *record = fopen("Score/records.txt", "r");
         fscanf(record, "%lld%lld", &lastScore, &bestScore);
+        highestScore = bestScore;
         fclose(record);
 
         lastScore = score;
@@ -223,6 +233,7 @@ void Game::UpdateScore(int linesCleared, int moveDownPoints)
             score += 500;
             break;
         default:
+            if(linesCleared) score += 1000;
             break;
     }
     score += moveDownPoints;

@@ -20,19 +20,19 @@ bool front_page = true;
 bool leaderboard_page = false;
 bool about_page = false;
 bool loading_page = false;
+bool help_page = false;
 bool main_game = false;
 bool game_over = false;
 
 int main()
 {
 
-
     InitWindow(500, 620, "Tetris");
 
     Texture2D blocksImage = LoadTexture("Image/blocks.png");
     Texture2D aboutImage = LoadTexture("Image/aboutpage2.png");
     Texture2D aboutinsideImage = LoadTexture("Image/aboutinside.png");
-
+    Texture2D helpImage = LoadTexture("Image/helppage.png");
 
     SetTargetFPS(60);
     SetWindowIcon(icon);
@@ -41,11 +41,12 @@ int main()
     Font tittle = LoadFontEx("Font/Tiny5-Regular.ttf", 500, 0, 0);
     Font font_treb = LoadFontEx("Font/trebucbd.ttf", 500, 0, 0);
 
+
     Game game = Game();
 
     while (WindowShouldClose() == false)
     {
-        UpdateMusicStream(game.music);
+
         BeginDrawing();
 
         ClearBackground(darkBlue);
@@ -53,6 +54,7 @@ int main()
         if(front_page){
 
             // FIrst page Before Any Game Start 
+            UpdateMusicStream(game.music);
 
             DrawRectangleRoundedLines({3, 3, 494, 614}, 0, 0, 5, WHITE); // WHole Rectangle
 
@@ -98,6 +100,38 @@ int main()
                 front_page = false;
                 leaderboard_page = true;
             }
+            if(button_in_action(help_button)){
+                front_page = false;
+                help_page = true;
+            }
+
+        }
+
+        if(help_page){
+
+            UpdateMusicStream(game.music);
+
+            DrawRectangleRoundedLines({3, 3, 494, 614}, 0, 0, 5, WHITE);
+            
+            // Drawing The About JPG
+            DrawTextureEx(helpImage, {3, 3}, 0, 0.236, WHITE);
+            //ENds
+
+            //back button
+            Button back_button;
+            init_button(&back_button, {15, 16, 77, 33}, lightWhite);        
+            button_color_change(&back_button, lightWhite, BLUE);
+            DrawRectangleRounded(back_button.rect, 0, 20, back_button.color);
+            DrawRectangleRoundedLines(back_button.rect, 0, 20, 1.2, BLACK);
+            DrawTextEx(font_treb, "BACK", {22, 20}, 25, 3, WHITE);
+
+
+            if(button_in_action(back_button)){
+                front_page = true;
+                help_page = false;
+            }
+            //
+
 
         }
 
@@ -105,6 +139,8 @@ int main()
 
         if(leaderboard_page){
             
+            UpdateMusicStream(game.music);
+
             FILE *record = fopen("Score/records.txt", "r");
 
             long long int last_score, best_score;
@@ -121,7 +157,7 @@ int main()
             Vector2 bestScoreSize = MeasureTextEx(font_treb, bestScore, 38, 3);
 
 
-            DrawRectangleRoundedLines({3, 3, 494, 614}, 0, 0, 5, WHITE);
+            DrawRectangleRoundedLines({3, 3, 494, 614}, 0, 0, 5, WHITE); // white border
 
             DrawRectangleRoundedLines({131, 109, 242, 63}, 0, 0, 2.1, WHITE);
             DrawTextEx(tittle, "TETRIS", {140, 100}, 80, 2, WHITE);
@@ -176,12 +212,15 @@ int main()
 
         if(about_page){
 
+            UpdateMusicStream(game.music);
+
             DrawRectangleRoundedLines({3, 3, 494, 614}, 0, 0, 5, WHITE);
             
             // Drawing The About JPG
             DrawTextureEx(aboutImage, {3, 3}, 0, 0.119, WHITE);
             //ENds
 
+            //back button
             Button back_button;
             init_button(&back_button, {15, 16, 77, 33}, lightWhite);        
             button_color_change(&back_button, lightWhite, BLUE);
@@ -189,18 +228,20 @@ int main()
             DrawRectangleRoundedLines(back_button.rect, 0, 20, 1.2, BLACK);
             DrawTextEx(font_treb, "BACK", {22, 20}, 25, 3, WHITE);
 
+
             if(button_in_action(back_button)){
                 front_page = true;
                 about_page = false;
             }
+            //
+
 
             Button flip_button;
             init_button(&flip_button, {433, 20, 47, 21}, WHITE);
             button_color_change(&flip_button, WHITE, GRAY);
-            DrawRectangleRoundedLines(flip_button.rect, 0, 20, 2,flip_button.color);
+            DrawRectangleRoundedLines(flip_button.rect, 0, 20, 2, flip_button.color);
 
             if(state == -1){
-                // DrawRectangle(3, 250, 492, 340, darkBlue);
                 DrawTextureEx(aboutinsideImage, {3, 250}, 0, 0.236, WHITE);
             }
 
@@ -224,6 +265,8 @@ int main()
 
         if(loading_page){
             
+            UpdateMusicStream(game.bgm);
+
             DrawRectangleRoundedLines({3, 3, 494, 614}, 0, 0, 5, WHITE); // WHole Rectangle border
 
             DrawRectangleRoundedLines({131, 109, 242, 63}, 0, 0, 2.1, WHITE);
@@ -253,12 +296,11 @@ int main()
 
 
 
-
         if(game_over){
+
 
             DrawRectangleRoundedLines({3, 3, 494, 614}, 0, 0, 5, WHITE);
             DrawTextEx(tittle, "WELL DONE", {122, 100}, 54, 2, WHITE);
-
 
 
             char scored[20];
@@ -275,9 +317,19 @@ int main()
             DrawTextEx(font, "LINE CLEARS :", {70 , 301}, 40, 2, WHITE);
             DrawRectangle(270, 300, 170, 49, lightWhite);
             DrawTextEx(font, RowsCleared, {270 + (170-textSize.x)/2, 300}, 45, 2, WHITE);
+            //
 
 
+            if(game.score >= game.highestScore){
+                DrawTextEx(font, "Hurrah! Highest Scorer", {70 , 370}, 50, 2, GREEN);
+                UpdateMusicStream(game.highScoreBgm);
+            }
+            else{
+                UpdateMusicStream(game.gameOverBgm);
+            }
 
+
+            //
             Button playAgain_button;
             init_button(&playAgain_button, {149, 445, 211, 43}, lightWhite);        
             button_color_change(&playAgain_button, lightWhite, lightestGreen);
@@ -314,6 +366,9 @@ int main()
 
         if(main_game){
             // Main Game Part
+
+            UpdateMusicStream(game.bgm);
+
             DrawRectangleRoundedLines({3, 3, 494, 614}, 0, 0, 5, WHITE);
 
             game.HandleInput();
@@ -321,7 +376,6 @@ int main()
 
             if(game.blockUpdateTime(abs(speed))){
                 game.MoveBlockDown();
-                cout << speed << endl;
             }
 
             if(game.SpeedUpdateTime(speed_interval) && (speed - 0.03) > 0){
@@ -373,6 +427,15 @@ int main()
         EndDrawing();
     }
     
+    UnloadImage(icon);
+    UnloadTexture(blocksImage);
+    UnloadTexture(aboutImage);
+    UnloadTexture(aboutinsideImage);
+    UnloadTexture(helpImage);
+
+    UnloadFont(font);
+    UnloadFont(tittle);
+    UnloadFont(font_treb);
     
     CloseWindow();
 }

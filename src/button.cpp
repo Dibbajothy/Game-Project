@@ -5,12 +5,13 @@ void init_button(Button *button, Rectangle rect, Color color){
     button->color = color;
 }
 
+
 bool is_mouse_over_button(Button button){
     return CheckCollisionPointRec(GetMousePosition(), button.rect);
 }
 
 bool button_in_action(Button button)
-{
+{   
     if(is_mouse_over_button(button) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
         return true;
     }

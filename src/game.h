@@ -15,8 +15,12 @@ class Game{
         bool SpeedUpdateTime(double interval);
         bool GameOver;
         int score;
+        int highestScore;
         int totalRowCleared;
         Music music;
+        Music bgm;
+        Music gameOverBgm;
+        Music highScoreBgm;
 
     private:
         Block GetRandomBlock();
