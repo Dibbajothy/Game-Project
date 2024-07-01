@@ -33,6 +33,8 @@ int main()
     Texture2D aboutImage = LoadTexture("Image/aboutpage2.png");
     Texture2D aboutinsideImage = LoadTexture("Image/aboutinside.png");
     Texture2D helpImage = LoadTexture("Image/helppage.png");
+    Texture2D soundOn = LoadTexture("Image/sound.png");
+    Texture2D soundOff = LoadTexture("Image/mute.png");
 
     SetTargetFPS(60);
     SetWindowIcon(icon);
@@ -54,39 +56,53 @@ int main()
         if(front_page){
 
             // FIrst page Before Any Game Start 
-            UpdateMusicStream(game.music);
+            if(game.sound == 1) UpdateMusicStream(game.music);
 
             DrawRectangleRoundedLines({3, 3, 494, 614}, 0, 0, 5, WHITE); // WHole Rectangle
 
             DrawRectangleRoundedLines({131, 109, 242, 63}, 0, 0, 2.1, WHITE);
             DrawTextEx(tittle, "TETRIS", {140, 100}, 80, 2, WHITE);
     
-            Button start_button, help_button, lead_button, about_button;
+            Button start_button, help_button, lead_button, about_button, sound_button;
 
             init_button(&start_button, {183, 274, 132, 38}, lightWhite);
             init_button(&help_button, {196, 333, 109, 39}, lightWhite);
             init_button(&lead_button, {109, 393, 281, 40}, lightWhite);
             init_button(&about_button, {180, 452, 141, 38}, lightWhite);
+            init_button(&sound_button, {428, 550, 50, 50}, NoColor);
 
             button_color_change(&start_button, lightWhite, lightestGreen);
             button_color_change(&help_button, lightWhite, BLUE);
             button_color_change(&lead_button, lightWhite, BLUE);
             button_color_change(&about_button, lightWhite, BLUE);
+            button_color_change(&sound_button, lightWhite, BLUE);
 
             DrawRectangleRounded(start_button.rect, 0, 20, start_button.color);
             DrawRectangleRounded(help_button.rect, 0, 20, help_button.color);
             DrawRectangleRounded(lead_button.rect, 0, 20, lead_button.color);
             DrawRectangleRounded(about_button.rect, 0, 20, about_button.color);
+            DrawRectangleRounded(sound_button.rect, 0, 20, sound_button.color);
 
             DrawRectangleRoundedLines(start_button.rect, 0, 20, 1.2, BLACK);
             DrawRectangleRoundedLines(help_button.rect, 0, 20, 1.2, BLACK);
             DrawRectangleRoundedLines(lead_button.rect, 0, 20, 1.2, BLACK);
             DrawRectangleRoundedLines(about_button.rect, 0, 20, 1.2, BLACK);
+            DrawRectangleRoundedLines(sound_button.rect, 0, 20, 1.2, BLACK);
 
             DrawTextEx(font_treb, "START", {192, 277}, 34, 7, WHITE);
             DrawTextEx(font_treb, "HELP", {205, 336}, 34, 7, WHITE);
             DrawTextEx(font_treb, "LEADERBOARD", {119, 397}, 33, 7, WHITE);
             DrawTextEx(font_treb, "ABOUT", {189, 455}, 34, 7, WHITE);
+
+            {
+                if(game.sound == 1){
+                    DrawTextureEx(soundOn, {438, 559}, 0, 0.4, WHITE);
+                }
+                else{
+                    DrawTextureEx(soundOff, {438, 559}, 0, 0.4, WHITE);
+                }
+            }
+
 
             if(button_in_action(about_button)){
                 front_page = false;
@@ -104,12 +120,15 @@ int main()
                 front_page = false;
                 help_page = true;
             }
+            if(button_in_action(sound_button)){
+                game.sound *= -1;
+            }
 
         }
 
         if(help_page){
 
-            UpdateMusicStream(game.music);
+            if(game.sound == 1) UpdateMusicStream(game.music);
 
             DrawRectangleRoundedLines({3, 3, 494, 614}, 0, 0, 5, WHITE);
             
@@ -139,7 +158,7 @@ int main()
 
         if(leaderboard_page){
             
-            UpdateMusicStream(game.music);
+            if(game.sound == 1) UpdateMusicStream(game.music);
 
             FILE *record = fopen("Score/records.txt", "r");
 
@@ -212,7 +231,7 @@ int main()
 
         if(about_page){
 
-            UpdateMusicStream(game.music);
+            if(game.sound == 1) UpdateMusicStream(game.music);
 
             DrawRectangleRoundedLines({3, 3, 494, 614}, 0, 0, 5, WHITE);
             
@@ -265,7 +284,7 @@ int main()
 
         if(loading_page){
             
-            UpdateMusicStream(game.bgm);
+            if(game.sound == 1) UpdateMusicStream(game.bgm);
 
             DrawRectangleRoundedLines({3, 3, 494, 614}, 0, 0, 5, WHITE); // WHole Rectangle border
 
@@ -322,10 +341,10 @@ int main()
 
             if(game.score >= game.highestScore){
                 DrawTextEx(font, "Hurrah! Highest Scorer", {70 , 370}, 50, 2, GREEN);
-                UpdateMusicStream(game.highScoreBgm);
+                if(game.sound == 1) UpdateMusicStream(game.highScoreBgm);
             }
             else{
-                UpdateMusicStream(game.gameOverBgm);
+                if(game.sound == 1) UpdateMusicStream(game.gameOverBgm);
             }
 
 
@@ -367,20 +386,26 @@ int main()
         if(main_game){
             // Main Game Part
 
-            UpdateMusicStream(game.bgm);
+            if(game.sound == 1) UpdateMusicStream(game.bgm);
 
             DrawRectangleRoundedLines({3, 3, 494, 614}, 0, 0, 5, WHITE);
 
             game.HandleInput();
             game.Draw();
 
-            if(game.blockUpdateTime(abs(speed))){
+            if(game.blockUpdateTime(abs(speed)) && (game.pause == -1)){
                 game.MoveBlockDown();
+                cout << speed << endl;
             }
 
-            if(game.SpeedUpdateTime(speed_interval) && (speed - 0.03) > 0){
-                speed -= 0.03;
+            if(game.SpeedUpdateTime(speed_interval) && ((speed - 0.03) > 0) && (game.pause == -1)){
+                speed -= 0.02;
             } // to increase the speed
+
+            if(game.pause == 1){
+                DrawRectangleRec({11, 260, 299, 72}, GRAY);
+                DrawTextEx(font, "Paused", {53, 244}, 100, 2, WHITE);
+            }
 
 
             //////// Score Board 
@@ -414,6 +439,20 @@ int main()
             DrawTextEx(font, linesClearText, {320 + (170-lineclear.x)/2, 497}, 38, 2, WHITE);
             /////////
 
+
+            //back button
+            Button exit_button;
+            init_button(&exit_button, {370, 565, 77, 33}, lightWhite);        
+            button_color_change(&exit_button, lightWhite, RED);
+            DrawRectangleRounded(exit_button.rect, 0, 20, exit_button.color);
+            DrawRectangleRoundedLines(exit_button.rect, 0, 20, 1.2, BLACK);
+            DrawTextEx(font_treb, "EXIT", {381, 569}, 25, 3, WHITE);
+
+            //{428, 550, 50, 50}
+            if(button_in_action(exit_button)){
+                game.Exit();
+            }
+            //
 
             // to initialize game_over page after game over 
             if(game.GameOver){

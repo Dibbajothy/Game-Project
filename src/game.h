@@ -8,12 +8,15 @@ class Game{
         ~Game();
         void Draw();
         void Reset();
+        void Exit();
         void HandleInput();
         void MoveBlockDown();
         bool EventTriggered(double interval);
         bool blockUpdateTime(double interval);
         bool SpeedUpdateTime(double interval);
         bool GameOver;
+        int pause;
+        int sound;
         int score;
         int highestScore;
         int totalRowCleared;

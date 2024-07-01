@@ -15,6 +15,7 @@ const Color lightBlue = {59, 85, 162, 255};
 const Color lightGreen = {102, 255, 102, 230};
 const Color lightWhite = {255, 255, 255, 30};
 const Color lightestGreen = {0, 255, 0, 160};
+const Color NoColor = {0, 0, 0, 0};
 
 vector<Color> GetCellColors(){
     return {darkgrey, green, red, orange, yellow, purple, cyan, blue};
